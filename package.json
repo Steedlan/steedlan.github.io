@@ -4,7 +4,7 @@
   "description": "",
   "main": "924b170ab22f9084f32c.js",
   "scripts": {
-    "deploy": "gh-pages -d ./"
+    "deploy": "gh-pages -d dist"
   },
   "author": "",
   "license": "ISC",
