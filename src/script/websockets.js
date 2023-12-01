@@ -9,7 +9,7 @@ const { setLoadingBarPercentage, afficherChargement, afficherInformation, stopAf
 const { updatePlayer, removeCard, imageUno, endGame } = require('./game');
 const { generateChatBox, addMessage } = require('./chat');
 
-const link = 'ws://155.248.239.223:25568';
+const link = 'wss://155.248.239.223:25568';
 
 // const link = 'ws://localhost:25568';
 
