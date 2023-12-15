@@ -2,37 +2,40 @@
 /* eslint-disable no-param-reassign */
 
 const socketio = require('socket.io-client');
-const { generatingGame, displayPlayerWhoPlay, addCard, setLastCard, reverseDirection, displayColorChoice, displayDrawCard, imageContreUno } = require('./game');
+const { generatingGame, displayPlayerWhoPlay, addCard, setLastCard, reverseDirection, displayColorChoice, displayDrawCard, imageContreUno, vinci, contreUnoDone } = require('./game');
 
 const erreur = require('./erreur');
-const { setLoadingBarPercentage, afficherChargement, afficherInformation, stopAfficherChargement, updateLoadingTitle, cacherDivQuiCacheLeChargement, fairePartirLeChargement } = require('./loadingGame');
+const { setLoadingBarPercentage, afficherChargement, afficherInformation, stopAfficherChargement, updateLoadingTitle, fairePartirLeChargement, cacherDivQuiCacheLeChargement } = require('./loadingGame');
 const { updatePlayer, removeCard, imageUno, endGame } = require('./game');
 const { generateChatBox, addMessage } = require('./chat');
+const { playError, playCardPlaySound } = require('./audio');
 
-const link = 'wss://155.248.239.223:25568';
+// const link = 'srv03.wildzun.fr:25568';
 
 // const link = 'ws://localhost:25568';
 
-let socket;
+// const link = 'https://unovinci.webpubsub.azure.com';
+
+let io;
 let isGameStarted = false;
 let hasStarted = false;
 
 const isConnected = () => {
-    return socket.connected;
+    return io.connected;
 }
 
 /**
  * Connexion au serveur websocket
  */
 const connectWebSocket = (nickname) => {
-    const io = socketio.io(link);
-
-    socket = io;
+    io = socketio.io("https://unovinci.webpubsub.azure.com", {
+        path: "/clients/socketio/hubs/hub",
+    });
     let timerPartie;
     // Afficher erreur si pas connecté dans les 15 secondes
     const interval = setTimeout(() => {
-        if (!socket.connected) {
-            erreur.afficherErreur("Impossible de se connecter au serveur, veuillez réessayer", socket);
+        if (!io.connected) {
+            erreur.afficherErreur("Impossible de se connecter au serveur, veuillez réessayer", io);
         }
     }, 15000);
 
@@ -60,13 +63,13 @@ const connectWebSocket = (nickname) => {
             if(!lobby.hasStarted) updateLoadingTitle('La partie va bientôt commencer');
             else updateLoadingTitle('Vous allez rejoindre une partie déjà commencée');
             afficherChargement('Chargement du terrain de jeu');
-            socket.emit('getLobbyInfo');
+            io.emit('getLobbyInfo');
         });
 
         io.on('lobbyInfo', (lobby) => {
             generatingGame(lobby);
             generateChatBox();
-            // debug
+            cacherDivQuiCacheLeChargement();
             setLoadingBarPercentage(100);
 
             setTimeout(() => {
@@ -74,10 +77,9 @@ const connectWebSocket = (nickname) => {
             fairePartirLeChargement();
             }, 1000);
 
-            cacherDivQuiCacheLeChargement();
             setTimeout(() => {
                 stopAfficherChargement();
-            }, 6000);
+            }, 5000);
         });
 
         io.on('newPlayer', (player) => {
@@ -95,6 +97,7 @@ const connectWebSocket = (nickname) => {
         io.on('cardPlayed', (infos) => {
             setLastCard(infos.card);
             removeCard(infos.toPlayer, infos.card);
+            playCardPlaySound();
         })
 
         io.on('chatMessage', (message) => {
@@ -102,7 +105,7 @@ const connectWebSocket = (nickname) => {
         });
 
         io.on('invalidCard', () => {
-           // mettre ici un son pour dire que la carte est invalide 
+           playError();
         });
 
         io.on('newDirection', (direction) => {
@@ -119,7 +122,7 @@ const connectWebSocket = (nickname) => {
             endGame(infos);
         });
         io.on('kicked', (message) => {
-            erreur.afficherErreur(message, socket);
+            erreur.afficherErreur(message, io);
         });
         io.on('uno', () => {
             imageUno();
@@ -127,8 +130,26 @@ const connectWebSocket = (nickname) => {
         io.on('contreUno', () => {
             imageContreUno();
         });
+        io.on('vinci', (infos) => {
+            vinci(infos.playerId);
+        })
+        io.on('contreUnoDone', (infos) => {
+            contreUnoDone(infos.playerId);
+            const element = document.querySelector('.image-uno');
+            if(element !== null ) element.remove();
+        });
 })
+
+setTimeout(() => {
+    erreur.stopIgnoreError();
+}, 1000);
 return io;
+}
+
+function disconnectWebSocket() {
+    if(io !== null) {
+        io.disconnect();
+    }
 }
 
 function whoPlayIfALreadyStarted() {
@@ -138,7 +159,7 @@ function whoPlayIfALreadyStarted() {
 function checkForConnection() {
     const connectionCheckInterval = setInterval(() => {
         if (!isConnected()) {
-            erreur.afficherErreur("La connexion au serveur a été perdue", socket);
+            erreur.afficherErreur("La connexion au serveur a été perdue", io);
             clearInterval(connectionCheckInterval);
         }
     }, 3000)
@@ -151,12 +172,12 @@ function checkForConnection() {
  */
 function addPlayerToServer(nickname) {
     if (nickname === undefined) return;
-    if (socket.connected) socket.emit('addPlayer', nickname, socket.id);
+    if (io.connected) io.emit('addPlayer', nickname, io.id);
 }
 
 function sendSocketToServer (type, value) {
-    if(socket === null ||type === null) return;
-    socket.emit(type, value);
+    if(io === null ||type === null) return;
+    io.emit(type, value);
 }
 
 
@@ -166,4 +187,5 @@ module.exports = {
     addPlayerToServer,
     sendSocketToServer,
     whoPlayIfALreadyStarted,
+    disconnectWebSocket,
 }

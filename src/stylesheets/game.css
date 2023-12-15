@@ -256,9 +256,6 @@
         border: none;
     }
 
-    .cardMainPlayer:hover {
-        
-    }
 
     .card {
         margin-left: 10%;
@@ -410,7 +407,7 @@
     top: 0px;
     float:right;
     border-radius: 0px 500px 0px 0px ;
-    background: radial-gradient(circle at bottom left, rgba(0,0,0,0) 40%, black 120%), rgb(77, 224, 38);
+    background: radial-gradient(circle at bottom left, rgba(0,0,0,0) 40%, black 120%), rgb(30, 152, 0);
     width: 200px;
     height: 200px;
     transition: 0.4s;
@@ -472,7 +469,7 @@
 }
 .image-uno{
     width: 200px;
-    height: 80px;
+    height: 160px;
     color: black;
     position: absolute;
     top: 20px;
@@ -488,4 +485,374 @@
 .titleFinal{
     margin-left: 100px !important;
     padding-top: 10px !important;
+}
+
+
+.finalScoreboard{
+    position: absolute;
+    height: 550px !important;
+    width: 1000px !important;
+    border-radius: 100px;
+    border: 5px solid black;
+    background-color: orange;
+    margin-left: auto;
+    margin-right: auto;
+    z-index: 900;
+    left:0;
+    right:0;
+    animation: resultSlide ease-in-out 3s forwards;
+}
+
+.finalScoreboard h1 {
+    position: absolute;
+    font-size: 50px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+    font-stretch: condensed;
+    padding-top: 10px;
+    margin-left: 250px;
+    border: 5px solid black;
+    border-radius: 20px;
+    background-color: orange;
+    padding: 10px;
+    margin-top: -50px;
+    z-index: 910;
+}
+
+.leaderboard1{
+    height: 400px;
+    width: 300px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.leaderboard1 img, .leaderboard2 img, .leaderboard3 img{
+    margin-top: 60px;
+    height: 125px;
+    width: 125px;
+    margin-left: 80px;
+}
+
+.leaderboard1 h2, .leaderboard2 h2, .leaderboard3 h2{
+    font-size:40px;
+    width: 300px;
+    text-align: center;
+    margin-top: 0px;
+}
+
+.leaderboard1 .score, .leaderboard2 .score, .leaderboard3 .score{
+    font-size: 25px;
+    font-weight: bold;
+    width: 300px;
+    text-align: center;
+    margin-top: -15px;
+}
+
+.leaderboard1 .cardsLeft, .leaderboard2 .cardsLeft, .leaderboard3 .cardsLeft{
+    font-size: 20px;
+    font-weight: bold;
+    width: 300px;
+    text-align: center;
+    margin-top: -10px;
+}
+
+.leaderboard1 .cardsPlayed, .leaderboard1 .cardsDrawn, .leaderboard2 .cardsPlayed, .leaderboard2 .cardsDrawn, .leaderboard3 .cardsPlayed, .leaderboard3 .cardsDrawn{
+    font-size: 15px;
+    font-weight: bold;
+    width: 300px;
+    text-align: center;
+    margin-top: -5px;
+}
+
+
+.rankGold{
+    width: 330px;
+    height: 200px;
+    margin-left: 2px;
+    margin-top: 32px;
+    background: url("../img/leaderboard/laurier.png");
+    background-size: 300px 220px;
+    background-repeat: no-repeat;
+    filter: contrast(150%) saturate(150%);
+    z-index: 999;
+}
+
+
+.leaderboard2{
+    height: 400px;
+    width: 300px;
+    position: absolute;
+    left: 50px;
+    top: 50px;
+}
+
+.leaderboard3{
+    height: 400px;
+    width: 300px;
+    position: absolute;
+    right: 50px;
+    top: 50px;
+}
+
+
+.rankSilver{
+    width: 330px;
+    height: 200px;
+    margin-left: 2px;
+    margin-top: 32px;
+    background: url("../img/leaderboard/laurier.png");
+    background-size: 300px 220px;
+    background-repeat: no-repeat;
+    filter:grayscale(100%);
+    z-index: 999;
+}
+
+.rankBronze{
+    width: 330px;
+    height: 200px;
+    margin-left: 2px;
+    margin-top: 32px;
+    background: url("../img/leaderboard/laurier.png");
+    background-size: 300px 220px;
+    background-repeat: no-repeat;
+    filter: grayscale(50%) brightness(70%) contrast(200%) saturate(200%) hue-rotate(180deg) invert(100%);
+    z-index: 999;
+}
+
+.leaderboard4{
+    width: 300px;
+    height: 200px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    bottom: -60px;
+}
+
+.leaderboard4 img {
+    margin-top: 25px;
+    height: 75px;
+    width: 75px;
+    margin-left: 0px;
+}
+
+.leaderboard4 h2 {
+    margin-top: 30px;
+    font-size: 22px;
+    width: 400px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.leaderboard4 .score {
+    font-size: 20px;
+    font-weight: bold;
+    width: 400px;
+    text-align: center;
+    margin-top: -15px;
+}
+
+.leaderboard4 .cardsLeft {
+    font-size: 15px;
+    font-weight: bold;
+    width: 400px;
+    text-align: center;
+    margin-top: -7px;
+}
+
+.leaderboard4 .cardsPlayed, .leaderboard4 .cardsDrawn {
+    font-size: 10px;
+    font-weight: bold;
+    width: 400px;
+    text-align: center;
+    margin-top: -5px;
+}
+
+.resultBackground{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: black;
+    animation: fadeIn 3s forwards;
+    z-index: 800;
+}
+
+@keyframes resultSlide{
+    0%{
+        transform: translateY(300%);
+    }
+    100%{
+        transform: translateY(0%);
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0.7;
+    }
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100%{
+        opacity: 0;
+    }
+}
+
+.replayButton{
+    position:absolute;
+    left: 0px;
+    right: 0px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 250px;
+    height: 60px;
+    z-index: 1000;
+    bottom: 3%;
+    font-size: 40px;
+    line-height: 20px;
+    background-image: linear-gradient(to right, #FF8008 0%, #FFC837  51%, #FF8008  100%);
+    background-size: 200% auto;
+    background-position: left center;
+    animation: replayButton ease-in-out 2s forwards;
+    overflow: hidden;
+    transition: 1s;
+    border-image: linear-gradient(to right, #FF8008 0%, #FFC837  51%, #FF8008  100%) 3;
+    border-width: 4px;
+    border-style: solid;
+    font-weight: 500;
+}
+
+.replayButton:hover{
+    background-position: right center;
+    width: 270px; 
+    letter-spacing: 5px;
+}
+
+@keyframes replayButton {
+    0% {
+        transform: translateY(300%);
+    }
+    100%{
+        transform: translateY(0%);
+    }
+}
+
+
+
+.vinci{  
+    filter: blur(100px);
+    display: none;
+	position: absolute;
+	top: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    left:0;
+    right: 0;
+    width: 300px;
+    height: 100px;
+	text-align: center;
+    transition: 2s;
+    z-index: 500;
+}
+
+.vinci0{
+    top: 45%;
+    right: 40%;
+}
+
+.vinci1{
+    top: 25%;
+}
+
+
+.vinci2{
+    top: 45%;
+    left: 40%;
+}
+
+.vincinull{
+    top: 70%;
+}
+
+.vinciSpan {
+  position: relative;
+  font-family: verdana;
+  font-size: 60px;
+  color: white;
+  font-weight: bold;
+  transition: 2s;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+
+
+@keyframes blur{
+  0%{
+    filter: blur(0px);
+  }
+  100%{
+    filter: blur(100px);
+  }
+}
+
+@keyframes upDown {
+    0%{
+        top: 0px;
+    }
+    50%{
+        top: -20px;
+    }
+  
+    100% {
+        top: 0px;
+    }
+
+}
+
+.contrevinci{
+        position: absolute;
+        height: 200px;
+        width: 200px;
+        background: url("../img/exclamation_mark.png");
+        background-size: 200px 200px;
+        z-index: 1000;
+        margin-left: auto;
+        margin-right: auto;
+        left:0;
+        right: 0;
+}
+
+.contrevinci0{
+    top: 40%;
+    right: 40%;
+}
+
+.contrevinci1{
+    top: 10%;
+}
+
+.contrevinci2{
+    top: 40%;
+    left: 40%;
+}
+
+.contrevincinull{
+    top: 70%;
 }

@@ -1,9 +1,10 @@
+/* eslint-disable import/no-import-module-exports */
 /* eslint-disable no-loop-func */
 /* eslint-disable global-require */
 /* eslint-disable no-multi-assign */
 /* eslint-disable no-param-reassign */
 
-const { setLoadingBarPercentage } = require('./loadingGame');
+const { setLoadingBarPercentage, afficherDivQuiCacheLeChargement, afficherDivChargement } = require('./loadingGame');
 const { getCardImage, getCardIcon, getUserIcon, getBotIcon, getImageUno, getImageContreUno } = require('./images');
 const { afficherInformation } = require('./loadingGame');
 
@@ -237,6 +238,8 @@ function addCardToMainPlayer(card) {
       if(!carddiv.classList.contains('notTheTimeToPlay')) {
        const {sendSocketToServer} = require('./websockets');
         sendSocketToServer('playCard', carddiv.card);
+        const element = document.querySelector('.image-uno');
+        if(element !== null ) element.remove();
       }
     });
 
@@ -275,7 +278,8 @@ function findInsertIndex(newCard) {
 
   for (let i = 0; i < divMainPlayer.divCardIconCards.length; i += 1) {
       const {card} = divMainPlayer.divCardIconCards[i];
-
+      if(card === null) return i;
+      if(newCard === null) return i;
       const colorComparison = colorOrder.indexOf(newCard.color) - colorOrder.indexOf(card.color);
       if (colorComparison < 0) {
           return i;
@@ -387,7 +391,7 @@ divOpponentPlayer.imageUserIcon = document.createElement('img');
   divOpponentPlayer.mainDiv.appendChild(divOpponentPlayer.textCardCount);
   divOpponentPlayer.mainDiv.appendChild(divOpponentPlayer.textNickname);
   divOpponentPlayer.mainDiv.appendChild(divOpponentPlayer.imageUserIcon);
-document.body.appendChild(divOpponentPlayer .mainDiv);
+document.body.appendChild(divOpponentPlayer.mainDiv);
 
 divOpponentPlayer.mainDivCards = document.createElement('div');
 divOpponentPlayer.mainDivCards.className = `opponentPlayerCards${number}`;  
@@ -603,11 +607,13 @@ function imageUno(){
   document.body.appendChild(image);
 
   const timer = setTimeout(() => {
-    document.body.removeChild(image);
+    const div = document.querySelector('.image-uno');
+    if(div !== null) div.remove();
   }, 5000);
 
   image.addEventListener('click', () => {
-    document.body.removeChild(image);
+    const div = document.querySelector('.image-uno');
+    if(div !== null) div.remove();
     const io = require('./websockets');
     io.sendSocketToServer('uno');
     clearTimeout(timer);
@@ -621,11 +627,13 @@ function imageContreUno(){
   document.body.appendChild(image);
 
   const timer = setTimeout(() => {
-    document.body.removeChild(image);
+    const div = document.querySelector('.image-uno');
+    if(div !== null) div.remove();
   }, 5000);
 
   image.addEventListener('click', () => {
-    document.body.removeChild(image);
+    const div = document.querySelector('.image-uno');
+    if(div !== null) div.remove();
     const io = require('./websockets');
     io.sendSocketToServer('contreUno');
     clearTimeout(timer);
@@ -634,32 +642,248 @@ function imageContreUno(){
 
 function endGame(infos) {
   const popupScoreboard = document.createElement('div');
-  popupScoreboard.id = 'popupScoreboard';
-  
+  popupScoreboard.className = 'finalScoreboard';
+
+  const divResultBackground = document.createElement('div');
+  divResultBackground.className = 'resultBackground';
+
   const titre = document.createElement('h1');
-  titre.innerText = 'Classement final';
+  titre.innerText = 'Partie Terminée';
   popupScoreboard.appendChild(titre);
-  
+
   infos.forEach((playerInfo, index) => {
-    const playerStat = document.createElement('p');
-      playerStat.classList.add('titleFinal')
-      playerStat.innerText = `${index + 1}e Place : ${playerInfo.username} - ${playerInfo.score} points, ${playerInfo.numberOfCards} cartes restantes`;
-  
-    const cardsDrawn = document.createElement('p');
-      cardsDrawn.classList.add('subTitleFinal')
-      cardsDrawn.innerText = `Cartes piochées: ${playerInfo.numberOfCardsDrawned}`;
-  
-    const cardsPlayed = document.createElement('p');
-      cardsPlayed.classList.add('subTitleFinal')
-      cardsPlayed.innerText = `Cartes jouées: ${playerInfo.numberOfCardsPlayed}`;
-  
-    popupScoreboard.appendChild(playerStat);
-    popupScoreboard.appendChild(cardsDrawn);
-    popupScoreboard.appendChild(cardsPlayed);
+    const divPlayer = document.createElement('div');
+      divPlayer.className = `leaderboard${index + 1}`;
+  const nickname = document.createElement('h2');
+    nickname.innerText = `${playerInfo.username}`;
+    
+    const divUserIcon = document.createElement('img');
+      divUserIcon.className = 'userIconLeaderBoard';
+      if(playerInfo.isHuman) setUserIcon(divUserIcon);
+      else setBotIcon(divUserIcon);
+
+
+    const divRank = document.createElement('div');
+    if(index === 0) divRank.className = "rankGold";
+    if(index === 1) divRank.className = "rankSilver";
+    if(index === 2) divRank.className = "rankBronze";
+    if(index > 2) divRank.className = "rankLast";
+
+    const divScore = document.createElement('div');
+      divScore.className = 'score';	
+      divScore.innerText = `${playerInfo.score} points restants`;
+      if(playerInfo.score <= 1) divScore.innerText = `${playerInfo.score} point restant`;
+
+    const divCardsLeft = document.createElement('div');
+      divCardsLeft.className = 'cardsLeft';
+      divCardsLeft.innerText = `${playerInfo.numberOfCards} cartes restantes`; 
+      if(playerInfo.numberOfCards <= 1) divCardsLeft.innerText = `${playerInfo.numberOfCards} carte restante`;
+
+    const divCardsDrawn = document.createElement('div');
+      divCardsDrawn.className = 'cardsDrawn';
+      divCardsDrawn.innerText = `${playerInfo.numberOfCardsDrawned} cartes piochées`;
+      if(playerInfo.numberOfCardsDrawned <= 1) divCardsDrawn.innerText = `${playerInfo.numberOfCardsDrawned} carte piochée`;
+
+    const divCardsPlayed = document.createElement('div');
+      divCardsPlayed.className = 'cardsPlayed';
+      divCardsPlayed.innerText = `${playerInfo.numberOfCardsPlayed} cartes jouées`;
+      if(playerInfo.numberOfCardsPlayed <= 1) divCardsPlayed.innerText = `${playerInfo.numberOfCardsPlayed} carte jouée`;
+
+
+    divPlayer.appendChild(divRank);
+    divPlayer.appendChild(nickname);
+    divPlayer.appendChild(divUserIcon);
+    
+    divPlayer.appendChild(divScore);
+    divPlayer.appendChild(divCardsLeft);
+    divPlayer.appendChild(divCardsPlayed);
+    divPlayer.appendChild(divCardsDrawn);
+
+    popupScoreboard.appendChild(divPlayer);
+    document.body.appendChild(divResultBackground);
   });
-  
+
   document.body.appendChild(popupScoreboard);
+
+  setTimeout(() => {
+      const button = document.createElement('button');
+      button.className = 'replayButton';
+      button.innerText = 'Rejouer';
+
+      button.addEventListener('click', () => {
+      
+      const background = document.createElement('div');
+        background.className = 'replayLoadingScreen';
+        background.style.background = 'linear-gradient(110.1deg, rgb(241, 115, 30) 18.9%, rgb(231, 29, 54) 90.7%)';
+        background.style.animation = 'fadeInOut 2.5s ease-in-out forwards';
+        background.style.zIndex = '2000';
+        background.style.height = '100%';
+        background.style.width = '100%';
+        background.style.position = 'absolute';
+        document.body.appendChild(background);
+
+        afficherDivChargement();
+
+        setTimeout(() => {
+          removeEverything();
+          background.remove();
+          afficherDivQuiCacheLeChargement();
+          setLoadingBarPercentage(5);
+            document.querySelectorAll('.replayLoadingScreen').forEach((element) => {
+              element.remove();
+            });
+
+            let pseudo = document.querySelector('#nickname').value;
+            if(pseudo === '') pseudo = document.querySelector('#nickname').placeholder;
+            setTimeout(() => {
+              require('./websockets').connectWebSocket(pseudo);
+            }, 1000);
+        }, 1000);
+      });
+      document.body.appendChild(button);
+  }, 3000);
+
+  require('./erreur').ignoreError();
+  require('./websockets').disconnectWebSocket();
 }
+
+function removeEverything() {
+  document.body.removeChild(cardCenterDiv);
+  document.body.removeChild(directionArrow);
+  document.body.removeChild(divColorChoice);
+  document.body.removeChild(colorBackground);
+
+  document.body.removeChild(divMainPlayer.mainDiv);
+  document.body.removeChild(divMainPlayer.mainDivCards);
+
+  playerDeck = [];
+  divMainPlayer.divCardIconCards = [];
+
+  for(let i = 0; i < divOpponentPlayers.length; i += 1) {
+    document.body.removeChild(divOpponentPlayers[i].mainDiv);
+    document.body.removeChild(divOpponentPlayers[i].mainDivCards);
+    divOpponentPlayers[i].divCardIconCards = [];
+  }
+
+  document.querySelector('.vinciLogo').remove();
+  document.querySelector('.finalScoreboard').remove();
+  document.querySelector('.resultBackground').remove();
+  document.querySelector('.replayButton').remove();
+  document.querySelector('.chatbox').remove();
+  document.querySelector('#divChargement').remove();
+  document.querySelector('#divChargement2').remove();
+  document.querySelector('#divMessages').remove();
+}
+
+
+function vinci(playerId) {
+  const container = document.createElement('div');
+  container.className = 'vinci';
+  container.classList.add(`vinci${getOpponentIndex(playerId)}`);
+  
+  const elements = [];
+
+  const v = document.createElement('span');
+    v.innerText = 'V';
+    v.className = 'vinciSpan';
+  elements.push(v);
+
+  const i1 = document.createElement('span');
+    i1.innerText = 'I';
+    i1.className = 'vinciSpan';
+  elements.push(i1);
+
+  const n = document.createElement('span');
+    n.innerText = 'N';
+    n.className = 'vinciSpan';
+  elements.push(n);
+
+  const c = document.createElement('span');
+    c.innerText = 'C';
+    c.className = 'vinciSpan';
+  elements.push(c);
+
+  const i2 = document.createElement('span');
+    i2.innerText = 'I';
+    i2.className = 'vinciSpan';
+  elements.push(i2);
+
+  container.appendChild(v);
+  container.appendChild(i1);
+  container.appendChild(n);
+  container.appendChild(c);
+  container.appendChild(i2);
+  document.body.appendChild(container);
+
+  container.style.display = "block"; 
+  container.style.animationName = "blur"
+  container.style.animationDuration = "1.5s"
+  container.style.animationDirection = "reverse"
+   
+  setTimeout(() => {
+    container.style.animationName = "none"
+    container.style.filter = "none";
+    vague(elements);
+   }, 1500);
+  
+  setTimeout(() => {
+    vague(elements);
+   }, 3500);
+  
+  setTimeout(() => {
+    container.style.animation = "blur 2s ease-in-out forwards";
+   }, 6000);
+   
+  setTimeout(() => {
+    container.remove();
+  }, 7000)
+
+}
+
+/**
+ * Fonction qui sert à faire bouger les lettres de vinci
+ * @param {*} elements le tableau avec les lettres
+ */
+function vague(elements) {
+  for(let i = 0; i < elements.length; i += 1) {
+  const element = elements[i];
+    setTimeout(() => {
+      element.style.animation = "upDown 1.5s ease-in-out infinite";
+      element.style.color = "orange";
+      element.style.textShadow = "#c9a206 1px 0 10px";
+        setTimeout(() => {element.style.animation = "none";}, 1500);
+      setTimeout(() => {
+        element.style.color = "white";
+        element.style.textShadow = "#000000 1px 0 10px";
+      }, 1000);
+    }, i * 200);
+  }
+}
+
+function contreUnoDone(playerId) {
+const element = document.createElement("div");
+    element.className="contrevinci";
+    element.classList.add(`contrevinci${getOpponentIndex(playerId)}`);
+  
+  document.body.appendChild(element);
+
+const interval = setInterval(() => {
+   element.style.filter = "grayscale(100%)";
+   setTimeout(() => {
+   element.style.filter = "grayscale(0%)";
+   }, 200);
+}, 400)
+
+
+  setTimeout(() => {
+   const div = document.querySelector('.contrevinci');
+   if(div !== null) div.remove();
+   clearInterval(interval);
+ }, 2000);
+
+}
+
+
 
 module.exports = {
   generatingGame,
@@ -675,4 +899,7 @@ module.exports = {
   endGame,
   imageUno,
   imageContreUno,
+  removeEverything,
+  vinci,
+  contreUnoDone,
 };

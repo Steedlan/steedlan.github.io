@@ -1,3 +1,4 @@
+/* eslint-disable import/no-mutable-exports */
 import { uniqueNamesGenerator, adjectives, colors, animals } from 'unique-names-generator';
 import { afficherDivChargement } from './loadingGame';
 import { connectWebSocket } from './websockets';
@@ -13,7 +14,7 @@ const nicknameForm = document.getElementById("nickname");
 const popupSettings = document.getElementById("popupSettings");
 const popupLogin = document.getElementById("popupLogin");
 const popupSignIn = document.getElementById("popupSignIn");
-const popupRules = document.getElementById("popupRules")
+const popupRules = document.getElementById("popupRules");
 const settingsButton = document.getElementById("options");
 const loginPath = document.getElementById("loginPath");
 const signInPath = document.getElementById("signInPath");
@@ -26,6 +27,9 @@ const popupCU = document.getElementById("popupCU");
 const CUButton = document.getElementById("CUbutton");
 const acceptButton = document.getElementById("acceptCU");
 const refuseButton = document.getElementById("refuseCU");
+let nickname;
+
+document.getElementById('usernameError').innerText = 'Maximum 18 caractères';
 
 let isPopUpDisplayed = false;
 let isPopUpLoginDisplayed = false;
@@ -35,10 +39,14 @@ setMusicVolume(0.1);
 let Value = 0.1;
 let socket;
 
-nicknameForm.placeholder = uniqueNamesGenerator({
-    dictionaries: [adjectives, animals, colors],
-    length: 2
-});
+
+do {
+    nicknameForm.placeholder = uniqueNamesGenerator({
+        dictionaries: [adjectives, animals, colors],
+        length: 2
+    });
+} while (nicknameForm.placeholder.length > 18)
+
 
 popupSettings.style.display = 'none';
 popupLogin.style.display = 'none';
@@ -179,6 +187,7 @@ closeRules.addEventListener('click', () => {
 CUButton.addEventListener('click', () => {
     settingsButton.style.display = 'none';
     popupCU.style.display = 'block';
+
 });
 
 acceptButton.addEventListener('click', () => {
@@ -208,29 +217,31 @@ window.addEventListener('unload', () => {
 playForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
+    nickname = nicknameForm.value;
+    if (nickname === '' || nickname === undefined) nickname = nicknameForm.placeholder;
 
-    // Masquer le bouton des paramètres
-    settingsButton.style.display = 'none';
+    if (nickname.length > 18) {
+        document.getElementById('usernameError').innerText = 'Votre pseudo contient plus de 18 caractères';
+    } else {
 
-    // Démarrer l'animation de chargement
-    document.querySelector('.homepage').classList.add('slide-up');
+        // Démarrer l'animation de chargement
+        document.querySelector('.homepage').classList.add('slide-up');
 
-    document.querySelector('.background').classList.add('slide-up');
-    document.querySelector('.backgroundCards').classList.add('slide-up');
+        document.querySelector('.background').classList.add('slide-up');
+        document.querySelector('.backgroundCards').classList.add('slide-up');
 
-    popupSettings.style.display = 'none';
-    popupLogin.style.display = 'none';
-    popupSignIn.style.display = 'none';
-    popupRules.style.display = 'none';
+        popupSettings.style.display = 'none';
+        popupLogin.style.display = 'none';
+        popupSignIn.style.display = 'none';
+        popupRules.style.display = 'none';
 
-    // Div chargement
-    afficherDivChargement();
+        // Div chargement
+        afficherDivChargement();
 
-    setTimeout(() => {
-        let nickname = nicknameForm.value;
-        if (nickname === '' || nickname === undefined) nickname = nicknameForm.placeholder;
-        connectWebSocket(nickname, null, null);
-    }, 2900);
+        setTimeout(() => {
+            connectWebSocket(nickname);
+        }, 2900);
+    }
 });
 
 function resetErrors() {
